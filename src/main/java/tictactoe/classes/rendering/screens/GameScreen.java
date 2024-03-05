@@ -19,7 +19,7 @@ public class GameScreen extends Screen{
         this.p = ScreenManager.p;
         gameManager = new GameManager(n);
 
-        p.printArray(PFont.list());
+        PApplet.printArray(PFont.list());
         f = p.createFont("Source Code Pro Regular", p.width / n * 2);
         p.textFont(f);
         p.textAlign(PConstants.CENTER, PConstants.CENTER);
