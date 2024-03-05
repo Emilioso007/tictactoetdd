@@ -16,16 +16,19 @@ public class App extends PApplet {
         PApplet.main("tictactoe.App");
     }
 
+    @Override
     public void settings() {
         size(600, 600, P2D);
     }
 
+    @Override
     public void setup() {
         surface.setTitle("Tic Tac Toe");
         ScreenManager.setPApplet(this);
         ScreenManager.setScreen(new GameScreen());
     }
 
+    @Override
     public void draw() {
         MH.update();
         MH.mouseX = mouseX;
@@ -36,6 +39,7 @@ public class App extends PApplet {
 
     }
 
+    @Override
     public void mousePressed() {
         if (mouseButton == LEFT) {
             MH.leftClicked = true;
@@ -44,6 +48,7 @@ public class App extends PApplet {
         }
     }
 
+    @Override
     public void mouseReleased() {
         if (mouseButton == LEFT) {
             MH.leftClicked = false;
