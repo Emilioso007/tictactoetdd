@@ -5,6 +5,8 @@ public class Cell {
     private int x, y, w, h;
     private char state;
 
+    public boolean clicked = false;
+
     public Cell(int x, int y, int w, int h) {
         this.x = x;
         this.y = y;
@@ -13,14 +15,14 @@ public class Cell {
         state = ' ';
     }
 
-    public boolean isClicked() {
+    public void update() {
         if (MH.leftClicked) {
             if (MH.mouseX > x && MH.mouseX < x + w && MH.mouseY > y && MH.mouseY < y + h) {
-                return true;
+                clicked = true;
             }
+        } else {
+            clicked = false;
         }
-
-        return false;
     }
 
     public char getState() {

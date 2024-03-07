@@ -7,7 +7,7 @@ public class GameManager {
 
     private PApplet p;
 
-    public Cell[] cells;
+    public Cell[][] cells;
 
     public char currentPlayer = 'X';
 
@@ -15,97 +15,143 @@ public class GameManager {
 
     public int n;
 
+    public boolean clicked = false;
+
     public GameManager(int n) {
 
         this.n = n;
 
         this.p = ScreenManager.p;
 
-        cells = new Cell[n * n];
+        cells = new Cell[n][n];
 
         int dimension = p.width / n;
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                cells[i * n + j] = new Cell(j * dimension, i * dimension, dimension, dimension);
+                cells[i][j] = new Cell(j * dimension, i * dimension, dimension, dimension);
             }
         }
 
     }
 
     public void update() {
-        for (Cell c : cells) {
-
-            if (c.isClicked() && c.getState() == ' ') {
-                c.setState(currentPlayer);
-                currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
-            }
-
+        if (!checkWin() && !checkTie()) {
+            updateCells();
+            runLogic();
+        
         }
+    }
 
-        // checkWin();
+    public void updateCells() {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                cells[i][j].update();
+            }
+        }
+    }
+
+    public void runLogic() {
+
+        for (Cell[] cOut : cells) {
+            for (Cell c : cOut) {
+                if (c.clicked && c.getState() == ' ') {
+                    c.setState(currentPlayer);
+                    currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+                }
+            }
+        }
 
     }
 
     public boolean checkWin() {
-
-        // check rows
-        char tempWinner = ' ';
-        for (int i = 0; i < n; i++) {
-            tempWinner = cells[i*n].getState();
-            for (int j = 0; j < n; j++) {
-                int index = i * n + j;
-                if (cells[index].getState() != tempWinner) {
-                    tempWinner = ' ';
-                    break;
-                }
-            }
-        }
-        if(tempWinner != ' '){
-            winner = tempWinner;
+        if (checkRows() || checkCols() || checkDiagonalOne() || checkDiagonalTwo()) {
             return true;
         }
+        return false;
+    }
 
-        // check columns (NOT FINISHED)
-        for (int i = 0; i < Math.sqrt(cells.length); i++) {
-            if (cells[i].getState() == cells[i + 3].getState() && cells[i].getState() == cells[i + 6].getState()
-                    && cells[i].getState() != ' ') {
-                winner = cells[i].getState();
-                return true;
+    public boolean checkRows() {
+
+        // check rows
+        for (int i = 0; i < n; i++) {
+            char temp = cells[i][0].getState();
+            for (int j = 1; j < n; j++) {
+                if (temp != cells[i][j].getState()) {
+                    break;
+                }
+                if (j == n - 1 && temp != ' ') {
+                    winner = temp;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean checkCols() {
+
+        // check cols
+        for (int i = 0; i < n; i++) {
+            char temp = cells[0][i].getState();
+            for (int j = 1; j < n; j++) {
+                if (temp != cells[j][i].getState()) {
+                    break;
+                }
+                if (j == n - 1 && temp != ' ') {
+                    winner = temp;
+                    return true;
+                }
             }
         }
 
-        // check diagonals
-        char tempWinner1 = cells[0].getState();
-        if (tempWinner1 != ' ') {
-            int tempScore1 = 1;
-            for (int i = 1; i < n; i++) {
-                if (cells[i * n + i].getState() == tempWinner1) {
-                    tempScore1 += 1;
-                }
-            }
-            if (tempScore1 == n) {
-                winner = tempWinner1;
-                return true;
-            }
-        }
+        return false;
 
-        // check diagonals the other way
-        char tempWinner2 = cells[n - 1].getState();
-        if (tempWinner2 != ' ') {
-            int tempScore2 = 1;
-            for (int i = 1; i < n; i++) {
-                if (cells[(i + 1) * n - (i + 1)].getState() == tempWinner2) {
-                    tempScore2 += 1;
-                }
+    }
+
+    public boolean checkDiagonalOne() {
+
+        // check diagonal one
+        char temp = cells[0][0].getState();
+        for (int i = 1; i < n; i++) {
+            if (temp != cells[i][i].getState()) {
+                break;
             }
-            if (tempScore2 == n) {
-                winner = tempWinner2;
+            if (i == n - 1 && temp != ' ') {
+                winner = temp;
                 return true;
             }
         }
 
         return false;
+
     }
 
+    public boolean checkDiagonalTwo() {
+
+        // check diagonal two
+        char temp = cells[0][n - 1].getState();
+        for (int i = 1; i < n; i++) {
+            if (temp != cells[i][n - 1 - i].getState()) {
+                break;
+            }
+            if (i == n - 1 && temp != ' ') {
+                winner = temp;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean checkTie() {
+        for (Cell[] cOut : cells) {
+            for (Cell c : cOut) {
+                if (c.getState() == ' ') {
+                    return false;
+                }
+            }
+        }
+        winner = 'T';
+        return true;
+    }
 }
